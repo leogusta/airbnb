@@ -24,7 +24,7 @@ export const createProfileAction = async (
         ...validetedFields,
       },
     });
-    
+
     await clerkClient.users.updateUserMetadata(user.id, {
       privateMetadata: {
         hasProfile: true,
@@ -32,8 +32,26 @@ export const createProfileAction = async (
     });
   } catch (error) {
     console.log(error);
-    return { message: error instanceof Error? error.message : 'An error occurred' };
+    return {
+      message: error instanceof Error ? error.message : "An error occurred",
+    };
   }
 
-  redirect('/');
+  redirect("/");
+};
+
+export const fetchProfileImage = async () => {
+  const user = await currentUser();
+  if (!user) return null;
+
+  const profile = await db.profile.findUnique({
+    where: {
+      clerkId: user.id,
+    },
+    select: {
+      profileImage: true,
+    },
+  });
+
+  return profile?.profileImage;
 };

@@ -1,6 +1,6 @@
 "use server";
 
-import { profileSchema, validateWithZodSchema } from "./schemas";
+import { profileSchema, validateWithZodSchema, imageSchema } from "./schemas";
 import db from "./db";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -98,6 +98,21 @@ export const updateProfileAction = async (
     });
     revalidatePath("/profile");
     return { message: "Profile updated successfully" };
+  } catch (error) {
+    return renderError(error);
+  }
+};
+
+export const updateProfileImageAction = async (
+  prevState: any,
+  formData: FormData
+): Promise<{ message: string }> => {
+  const user = await getAuthUser();
+  try {
+    const image = formData.get("image") as File;
+    const validatedFields = validateWithZodSchema(imageSchema, { image });
+
+    return { message: "Profile image updated successfully" };
   } catch (error) {
     return renderError(error);
   }
